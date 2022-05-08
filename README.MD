@@ -19,7 +19,7 @@ Toshkq93\Logger\Providers\LoggerServiceProvider::class
 2. Publish the config file with:
 
 ```bash
-php artisan vendor:publish --provider="Toshkq93\Logger\Providers\LoggerServiceProvider"
+php artisan vendor:publish --provider="Toshkq93\Logger\Providers\LoggerProvider"
 ```
 
 By default the logger will use *file* to log the data.

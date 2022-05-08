@@ -31,9 +31,6 @@ class LoggerProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
-        $this->bindDI();
-        $this->bindMiddleware();
-
         $this->loadRoutesFrom(
             __DIR__ . '/../routes/web.php'
         );
@@ -45,6 +42,9 @@ class LoggerProvider extends ServiceProvider
         $this->mergeConfigFrom(
             __DIR__.'/../config/logger.php', 'logger'
         );
+
+        $this->bindDI();
+        $this->bindMiddleware();
 
         $this->publishes([
             __DIR__ . '/../resources/views' => resource_path('views/vendor/logs'),
