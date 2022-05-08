@@ -42,9 +42,14 @@ class LoggerProvider extends ServiceProvider
             __DIR__ . '/../resources/views', 'logs'
         );
 
+        $this->mergeConfigFrom(
+            __DIR__.'/../config/logger.php', 'logger'
+        );
+
         $this->publishes([
-            __DIR__ . '/../resource/views' => resource_path('views/vendor/logs'),
-            __DIR__ . '/../config/logger.php' => config_path('logger.php')
+            __DIR__ . '/../resources/views' => resource_path('views/vendor/logs'),
+            __DIR__ . '/../config/logger.php' => config_path('logger.php'),
+            __DIR__ . '/../Enums/LoggerNameEnum.php' => app_path('/Enums/LoggerName.php')
         ]);
     }
 
