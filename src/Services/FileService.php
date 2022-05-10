@@ -65,6 +65,7 @@ class FileService extends LoggerService implements iLoggerDriverService
             $result = array_merge($result, $this->getDataByFiles($files));
         }
         $userIds = collect($result)
+            ->sortBy('userId')
             ->pluck('userId')
             ->unique()
             ->values()

@@ -3,10 +3,13 @@
 namespace Toshkq93\Logger\Providers;
 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Toshkq93\Logger\Contracts\Services\iLoggerDriverService;
 use Toshkq93\Logger\Enums\DriverNamesLoggerEnum;
 use Toshkq93\Logger\Exeptions\NotFoundDriverExeption;
+use Toshkq93\Logger\Gates\LoggerGate;
 use Toshkq93\Logger\Http\Middleware\Logger;
 use Toshkq93\Logger\Http\Middleware\Login;
 use Toshkq93\Logger\Services\FileService;
@@ -29,18 +32,17 @@ class LoggerProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->bindGates();
         Paginator::useBootstrapFive();
 
-        $this->loadRoutesFrom(
-            __DIR__ . '/../routes/web.php'
-        );
+        $this->registerRoute();
 
         $this->loadViewsFrom(
             __DIR__ . '/../resources/views', 'logs'
         );
 
         $this->mergeConfigFrom(
-            __DIR__.'/../config/logger.php', 'logger'
+            __DIR__ . '/../config/logger.php', 'logger'
         );
 
         $this->bindDI();
@@ -49,7 +51,8 @@ class LoggerProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../resources/views' => resource_path('views/vendor/logs'),
             __DIR__ . '/../config/logger.php' => config_path('logger.php'),
-            __DIR__ . '/../Enums/LoggerNameEnum.php' => app_path('/Enums/LoggerName.php')
+            __DIR__ . '/../Enums/LoggerNameEnum.php' => app_path('/Enums/LoggerName.php'),
+            __DIR__ . '/../Gates/LoggerGate.php' => app_path('/Gates')
         ]);
     }
 
@@ -78,5 +81,28 @@ class LoggerProvider extends ServiceProvider
         $router = $this->app->get('router');
         $router->aliasMiddleware('logger', Logger::class);
         $router->aliasMiddleware('loginLogger', Login::class);
+    }
+
+    /**
+     * @return void
+     */
+    private function registerRoute(): void
+    {
+        Route::group([
+            'prefix' => config('logger.prefix'),
+            'middleware' => config('logger.middleware'),
+        ], function () {
+            $this->loadRoutesFrom(
+                __DIR__ . '/../routes/web.php'
+            );
+        });
+    }
+
+    /**
+     * @return void
+     */
+    private function bindGates(): void
+    {
+        Gate::define('view', [LoggerGate::class, 'check']);
     }
 }

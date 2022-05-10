@@ -4,7 +4,7 @@ namespace Toshkq93\Logger\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class Login
 {
@@ -17,9 +17,6 @@ class Login
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()) {
-            return $next($request);
-        }
-        abort(404);
+        return $next($request);
     }
 }

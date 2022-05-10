@@ -251,7 +251,7 @@
     }
 
     $.ajax({
-        url: '/get-filters',
+        url: '/logs/get-filters',
         type: 'GET',
         success: function (res) {
             for(var key in res){
