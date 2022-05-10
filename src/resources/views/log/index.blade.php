@@ -209,7 +209,7 @@
                             @if($log->getQueries())
                                 <div id="accordeon" style="display: flex;flex-direction: column;">
                                     @if($log->getQueries())
-                                        <a class="query_toggle btn btn-info mt-2 mb-2" href="#" style="width: 15%;color: white">Requests</a>
+                                        <a class="query_toggle btn btn-info mt-2 mb-2" href="##" style="width: 15%;color: white">Requests</a>
 
                                         <div class="queries row w-100"
                                              style="background: #0dcaf0; color: white;display: none">
@@ -217,7 +217,7 @@
                                         </div>
                                     @endif
                                     @if($log->getMessageError())
-                                        <a class="error_toggle btn btn-danger mt-2 mb-2" href="#" style="width: 15%">Errors</a>
+                                        <a class="error_toggle btn btn-danger mt-2 mb-2" href="##" style="width: 15%">Errors</a>
                                         <div class="errors row w-100"
                                              style="background: red; color: white;display: none">
                                             <p class="col-md-12 mb-0">{!! $log->getMessageError() !!}</p>
@@ -247,60 +247,26 @@
 
     function error() {
         $('#accordeon .errors').not($(this).next()).slideUp();
-        $(this).next().slideToggle();
+        $(this).next().slideDown();
     }
 
     $.ajax({
         url: '/get-filters',
         type: 'GET',
         success: function (res) {
-            if (res.controllers) {
-                $('.controllers').show();
-                $('.controllers #controllers option').remove();
-                let option = '',
-                    controllers = res.controllers;
-                for (var i = 0; i < controllers.length; i++) {
-                    option += "<option value='" + controllers[i] +
-                        "'>" + controllers[i] + "</option>"
+            for(var key in res){
+                if(res[key]){
+                    let filter = res[key],
+                        filter_name = key;
+
+                    var option = '';
+
+                    for (var i = 0; i < filter.length; i++) {
+                        option += "<option value='" + filter[i] + "'>" + filter[i] + "</option>";
+                    }
+
+                    $('#' + filter_name).append(option);
                 }
-                option += "<option value='' selected>" + 'Выберите контроллер' + "</option>"
-                $('#controllers').append(option);
-            }
-            if (res.users) {
-                $('.users').show();
-                $('.users #users option').remove();
-                let option = '',
-                    users = res.users;
-                for (var i = 0; i < users.length; i++) {
-                    option += "<option value='" + users[i] +
-                        "'>" + users[i] + "</option>"
-                }
-                option += "<option value='' selected>" + 'Выберите пользователя' + "</option>"
-                $('#users').append(option);
-            }
-            if (res.directories) {
-                $('.directories').show();
-                $('.directories #directories option').remove();
-                let option = '',
-                    directories = res.directories;
-                for (var i = 0; i < directories.length; i++) {
-                    option += "<option value='" + directories[i] +
-                        "'>" + directories[i] + "</option>"
-                }
-                option += "<option value='' selected>" + 'Выберите директорию' + "</option>";
-                $('#directories').append(option);
-            }
-            if (res.responses) {
-                $('.responses').show();
-                $('.responses #responses option').remove();
-                let option = '',
-                    responses = res.responses;
-                for (let key in responses){
-                    option += "<option value='" + key +
-                        "'>" + key + ' - ' + responses[key] + "</option>"
-                }
-                option += "<option value='' selected>" + 'Выберите статус ответа HTTP' + "</option>";
-                $('#responses').append(option);
             }
         },
         error: function () {

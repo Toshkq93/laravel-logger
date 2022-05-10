@@ -81,7 +81,7 @@ class LoggerService
 
         foreach ($data as $key => $value) {
             $list[] = (new ModelDTO())
-                ->setModelName($key)
+                ->setModelName($this->getClassName($key))
                 ->setCount($value);
         }
 

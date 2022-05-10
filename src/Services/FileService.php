@@ -64,8 +64,16 @@ class FileService extends LoggerService implements iLoggerDriverService
             $files = $this->driver->allFiles($directory);
             $result = array_merge($result, $this->getDataByFiles($files));
         }
-        $userIds = collect($result)->pluck('userId')->toArray();
-        $controllers = collect($result)->pluck('controller')->toArray();
+        $userIds = collect($result)
+            ->pluck('userId')
+            ->unique()
+            ->values()
+            ->toArray();
+        $controllers = collect($result)
+            ->pluck('controller')
+            ->unique()
+            ->values()
+            ->toArray();
 
         $filter[FilterNamesEnum::USER] = $userIds;
         $filter[FilterNamesEnum::CONTROLLER] = $controllers;
@@ -99,14 +107,13 @@ class FileService extends LoggerService implements iLoggerDriverService
     private function toDTOPagonation(array $data, DataFilter $filter): ShowDataDTOCollection
     {
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $collection = collect($data);
+        $collection = collect($data)->sortByDesc('date');
         $collection = $this->filter($collection, $filter);
         $list = [];
 
         $currentPageItems = $collection->slice(($currentPage * self::PERPAGE) - self::PERPAGE, self::PERPAGE)->all();
         $paginatedItems = new LengthAwarePaginator($currentPageItems, $collection->count(), self::PERPAGE);
         $paginatedItems->setPath(route('logs'));
-        $paginatedItems->sortBy('date');
 
         foreach ($paginatedItems->items() as $item) {
             if (!empty($item['models'])) {
